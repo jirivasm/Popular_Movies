@@ -13,9 +13,19 @@ public class Movie {
     String mReleaseDate;
     String mDescription;
     double mVoteAverage;
-    int mMovieID;
+    int    mMovieID;
     //Empty Constructor
+    Movie(String poster, String name, String release, String description,double average,int id){
+        mPosterResource= poster;
+        mMovieName     = name;
+        mReleaseDate   = release;
+        mDescription   = description;
+        mVoteAverage   = average;
+        mMovieID       = id;
+    }
     Movie(){}
+
+
 
     //Getters
    public String getPoster(){return mPosterResource;}

@@ -23,6 +23,7 @@ import java.util.List;
 public class MovieNetworkUtils {
 
 
+    final static String BASE_IMAGE_URL="https://image.tmdb.org/t/p/w185";
     MovieNetworkUtils(){}
 
     public static List<Movie> extractMoviesJson(String JsonResponse)
@@ -41,25 +42,25 @@ public class MovieNetworkUtils {
             {
 
                JSONObject movie = resultsArray.getJSONObject(i);
-               String movieResource = movie.getString("poster_path");
-               film.setPosterResource(movieResource);
+               String movieResource = BASE_IMAGE_URL + movie.getString("poster_path");
+
 
                String movieName = movie.getString("original_title");
-               film.setMovieName(movieName);
+
 
                String movieReleaseDate = movie.getString("release_date");
-               film.setReleaseDate(movieReleaseDate);
+
 
                String movieDescription = movie.getString("overview");
-               film.setDescription(movieDescription);
+
 
                double movieVoteAverage = movie.getDouble("vote_average");
-               film.setVoterAverage(movieVoteAverage);
+
 
                int movieID = movie.getInt("id");
-               film.setMovieID(movieID);
 
-               movieList.add(film);
+
+               movieList.add(new Movie(movieResource,movieName,movieReleaseDate,movieDescription,movieVoteAverage,movieID));
 
             }
 

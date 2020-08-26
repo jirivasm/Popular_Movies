@@ -4,10 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -18,7 +21,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder{
 
-        public final TextView mMoviePoster;
+        public final ImageView mMoviePoster;
         public final TextView mMovieName;
         public final TextView mMovieReleaseDate;
         public final TextView mMovieDescription;
@@ -49,7 +52,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
 
             Movie Movie = mMovieData.get(position);
-            holder.mMoviePoster.setText(Movie.mPosterResource);
+            Picasso.get().load(Movie.mPosterResource).into(holder.mMoviePoster);
+
             holder.mMovieName.setText(Movie.mMovieName);
             holder.mMovieReleaseDate.setText(Movie.mReleaseDate);
             holder.mMovieDescription.setText(Movie.mDescription);

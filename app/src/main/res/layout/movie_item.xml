@@ -6,11 +6,10 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
+    <ImageView
         android:id="@+id/iv_image_poster"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        tools:text="IMAGE Poster Resource to change latter to imageView with Picasso"/>
+        android:layout_width="185dp"
+        android:layout_height="185dp"/>
 
     <View
         android:layout_width="match_parent"
