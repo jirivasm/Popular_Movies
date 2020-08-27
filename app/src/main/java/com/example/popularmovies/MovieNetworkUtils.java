@@ -81,7 +81,7 @@ public class MovieNetworkUtils {
         return url;
     }
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public static List<Movie> fetchNewsData(String requestUrl) {
+    public static List<Movie> fetchMovieData(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
 

@@ -22,17 +22,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder{
 
         public final ImageView mMoviePoster;
-        public final TextView mMovieName;
-        public final TextView mMovieReleaseDate;
-        public final TextView mMovieDescription;
+
 
         public MovieAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
 
             mMoviePoster      = itemView.findViewById(R.id.iv_image_poster)  ;
-            mMovieName        = itemView.findViewById(R.id.tv_movie_name)  ;
-            mMovieReleaseDate = itemView.findViewById(R.id.tv_release_date)  ;
-            mMovieDescription = itemView.findViewById(R.id.tv_movie_description)  ;
+
         }
     }
     @NonNull
@@ -53,10 +49,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
             Movie Movie = mMovieData.get(position);
             Picasso.get().load(Movie.mPosterResource).into(holder.mMoviePoster);
-
-            holder.mMovieName.setText(Movie.mMovieName);
-            holder.mMovieReleaseDate.setText(Movie.mReleaseDate);
-            holder.mMovieDescription.setText(Movie.mDescription);
 
     }
 

@@ -3,7 +3,7 @@ package com.example.popularmovies;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.net.Uri;
@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.movie_list_recycled);
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
-        LinearLayoutManager layoutManager
-                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager layoutManager
+                = new GridLayoutManager(this,3);
 
         mRecyclerView.setLayoutManager(layoutManager);
 
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             String movieUrl = url[0];
 
             try {
-                return MovieNetworkUtils.fetchNewsData(movieUrl);
+                return MovieNetworkUtils.fetchMovieData(movieUrl);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
