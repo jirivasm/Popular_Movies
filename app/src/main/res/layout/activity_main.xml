@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="Something went wrong"
+        android:text= "@string/something_went_wrong"
         android:textSize="20sp"
         android:visibility="invisible" />
 

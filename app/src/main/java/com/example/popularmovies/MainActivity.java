@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,26 +19,25 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+implements MovieAdapter.MovieAdapterOnClickHandler {
 
 
     boolean isByPopularity = true;
 
     private static final String SCHEME = "https";
     private static final String BASE_MOVIE_URL = "api.themoviedb.org";
-    private static final String BASE_MOVIE_URL_PATH1 = "3";
-    private static final String BASE_MOVIE_URL_PATH2 = "movie";
+    private static final String BASE_MOVIE_URL_VERSION = "3";
+    private static final String BASE_MOVIE_URL_VIDEO_TYPE = "movie";
     private static final String SORT_BY_POPULARITY = "popular";
     private static final String SORT_BY_RATING = "top_rated";
+    //TODO:1 Put your key here
     private static final String API_KEY = "32d1f41681e20fadbc912d5f398a3617";
 
 
     private RecyclerView mRecyclerView;
-    // COMPLETED (35) Add a private ForecastAdapter variable called mForecastAdapter
     private MovieAdapter mMovieAdapter;
-
     private TextView mErrorMessageDisplay;
-
     private ProgressBar mLoadingIndicator;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (isByPopularity) {
-            item.setTitle("Rating");
+            item.setTitle(getResources().getString(R.string.rating));
             isByPopularity = false;
         } else {
-            item.setTitle("Popularity");
+           item.setTitle(getResources().getString(R.string.popularity));
             isByPopularity = true;
         }
         loadMovieData();
@@ -74,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView.setHasFixedSize(true);
 
-
-        mMovieAdapter = new MovieAdapter();
+        mMovieAdapter = new MovieAdapter(this);
 
         mRecyclerView.setAdapter(mMovieAdapter);
 
@@ -86,24 +85,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMovieData() {
-        String urlbuilder;
+        showMoviesDataView();
+
+        String urlBuilder;
         if(isByPopularity)
-            urlbuilder =  buildUrl(SORT_BY_POPULARITY);
+            urlBuilder =  buildUrl(SORT_BY_POPULARITY);
         else
-            urlbuilder =  buildUrl(SORT_BY_RATING);
+            urlBuilder =  buildUrl(SORT_BY_RATING);
 
         FetchMovieTask task = new FetchMovieTask();
-        task.execute(urlbuilder);
+        task.execute(urlBuilder);
     }
     public static String buildUrl(String popularityOrRating) {
         Uri.Builder builtUri = new Uri.Builder();
 
         builtUri.scheme(SCHEME);
         builtUri.authority(BASE_MOVIE_URL);
-        builtUri.appendPath(BASE_MOVIE_URL_PATH1);
-        builtUri.appendPath(BASE_MOVIE_URL_PATH2);
+        builtUri.appendPath(BASE_MOVIE_URL_VERSION);
+        builtUri.appendPath(BASE_MOVIE_URL_VIDEO_TYPE);
         builtUri.appendPath(popularityOrRating);
-        builtUri.appendQueryParameter("api_key",API_KEY);
+        builtUri.appendQueryParameter( "api_key" ,API_KEY);
 
         return builtUri.toString();
 
@@ -119,7 +120,22 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public void onClick(Movie movieSelected) {
+
+        Intent intentToShowMovieDetails = new Intent(this,MovieDetails.class);
+        intentToShowMovieDetails.putExtra(getString(R.string.movieID),movieSelected.getMovieID());
+        startActivity(intentToShowMovieDetails);
+    }
+
     public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected void onPostExecute(List<Movie> movies) {
@@ -142,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
             String movieUrl = url[0];
 
             try {
-                return MovieNetworkUtils.fetchMovieData(movieUrl);
+                return MovieNetworkUtils.fetchMovieList(movieUrl);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

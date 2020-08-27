@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,9 +16,19 @@ import java.util.List;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     List<Movie> mMovieData;
-    MovieAdapter(){}
 
-    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder{
+    public final MovieAdapterOnClickHandler mClickHandler;
+
+    public interface MovieAdapterOnClickHandler {
+        void onClick(Movie movieSelected);
+    }
+
+    MovieAdapter(MovieAdapterOnClickHandler onClickHandler) {
+       mClickHandler = onClickHandler;
+    }
+
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder
+    implements View.OnClickListener {
 
         public final ImageView mMoviePoster;
 
@@ -27,19 +36,27 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         public MovieAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            mMoviePoster      = itemView.findViewById(R.id.iv_image_poster)  ;
+            mMoviePoster = itemView.findViewById(R.id.iv_image_poster);
+            itemView.setOnClickListener(this);
+        }
 
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            Movie movieSelected = mMovieData.get(adapterPosition);
+            mClickHandler.onClick(movieSelected);
         }
     }
+
     @NonNull
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         int layoutIdForListItem = R.layout.movie_item;
         LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
+
+        View view = inflater.inflate(layoutIdForListItem, parent, false);
         return new MovieAdapterViewHolder(view);
     }
 
@@ -47,8 +64,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
 
 
-            Movie Movie = mMovieData.get(position);
-            Picasso.get().load(Movie.mPosterResource).into(holder.mMoviePoster);
+        Movie Movie = mMovieData.get(position);
+        Picasso.get().load(Movie.getPoster()).into(holder.mMoviePoster);
 
     }
 
@@ -58,6 +75,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mMovieData.size();
 
     }
+
     public void setMovieData(List<Movie> movieData) {
         mMovieData = movieData;
         notifyDataSetChanged();
