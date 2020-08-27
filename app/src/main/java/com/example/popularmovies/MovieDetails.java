@@ -23,7 +23,7 @@ public class MovieDetails extends AppCompatActivity {
     private static final String BASE_MOVIE_URL_VERSION = "3";
     private static final String BASE_MOVIE_URL_VIDEO_TYPE = "movie";
     //TODO:2  Put your key here
-    private static final String API_KEY = "32d1f41681e20fadbc912d5f398a3617";
+    private static final String API_KEY = "";
 
 
     @Override

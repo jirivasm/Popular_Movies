@@ -32,7 +32,7 @@ implements MovieAdapter.MovieAdapterOnClickHandler {
     private static final String SORT_BY_POPULARITY = "popular";
     private static final String SORT_BY_RATING = "top_rated";
     //TODO:1 Put your key here
-    private static final String API_KEY = "32d1f41681e20fadbc912d5f398a3617";
+    private static final String API_KEY = "";
 
 
     private RecyclerView mRecyclerView;
