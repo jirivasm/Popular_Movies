@@ -65,7 +65,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
 
         Movie Movie = mMovieData.get(position);
-        Picasso.get().load(Movie.getPoster()).into(holder.mMoviePoster);
+        Picasso.get().load(Movie.getPosterResource()).into(holder.mMoviePoster);
 
     }
 

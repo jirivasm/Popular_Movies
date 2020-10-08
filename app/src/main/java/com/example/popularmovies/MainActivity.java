@@ -3,6 +3,8 @@ package com.example.popularmovies;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +41,10 @@ implements MovieAdapter.MovieAdapterOnClickHandler {
     private MovieAdapter mMovieAdapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
+
+    private MovieAdapter mFavoritesAdapter;
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         isByPopularity = true;
@@ -48,13 +54,21 @@ implements MovieAdapter.MovieAdapterOnClickHandler {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (isByPopularity) {
-            item.setTitle(getResources().getString(R.string.rating));
-            isByPopularity = false;
-        } else {
-           item.setTitle(getResources().getString(R.string.popularity));
-            isByPopularity = true;
+        if(item.getItemId() == R.id.action_sort_by) {
+            if (isByPopularity) {
+                item.setTitle(getResources().getString(R.string.rating));
+                isByPopularity = false;
+            } else {
+                item.setTitle(getResources().getString(R.string.popularity));
+                isByPopularity = true;
+            }
         }
+        if(item.getItemId()== R.id.action_sort_by_favorites)
+        {
+            Intent openFavoriteMovies = new Intent(this,favoriteMovies.class);
+            startActivity(openFavoriteMovies);
+        }
+
         loadMovieData();
         return super.onOptionsItemSelected(item);
     }
@@ -64,26 +78,35 @@ implements MovieAdapter.MovieAdapterOnClickHandler {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.movie_list_recycled);
+        mRecyclerView = findViewById(R.id.movie_list_recycled);
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this,3);
 
         mRecyclerView.setLayoutManager(layoutManager);
 
-
         mRecyclerView.setHasFixedSize(true);
 
         mMovieAdapter = new MovieAdapter(this);
-
+        mFavoritesAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMovieAdapter);
 
 
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         loadMovieData();
+        setUpViewModel();
     }
+    private void setUpViewModel() {
 
+        ViewModel viewModel = ViewModelProviders.of(this).get(ViewModel.class);
+        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(List<Movie> movies) {
+                mFavoritesAdapter.setMovieData(movies);
+            }
+        });
+    }
     private void loadMovieData() {
         showMoviesDataView();
 
@@ -124,8 +147,16 @@ implements MovieAdapter.MovieAdapterOnClickHandler {
     @Override
     public void onClick(Movie movieSelected) {
 
+        for(int i = 0; i<mFavoritesAdapter.mMovieData.size();i++)
+        {
+            if(movieSelected.getMovieID()==mFavoritesAdapter.mMovieData.get(i).getMovieID()) {
+                movieSelected.setIsFavorite(true);
+                break;
+            }
+        }
         Intent intentToShowMovieDetails = new Intent(this,MovieDetails.class);
         intentToShowMovieDetails.putExtra(getString(R.string.movieID),movieSelected.getMovieID());
+        intentToShowMovieDetails.putExtra(getString(R.string.isChecked),movieSelected.getIsFavorite());
         startActivity(intentToShowMovieDetails);
     }
 

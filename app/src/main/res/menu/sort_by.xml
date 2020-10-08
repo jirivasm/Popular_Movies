@@ -4,6 +4,12 @@
 
     <item android:title= "Popularity"
         android:id="@+id/action_sort_by"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:orderInCategory="1"/>
+
+
+    <item android:title="@string/favorites"
+        android:id="@+id/action_sort_by_favorites"
+        app:showAsAction="always"
+        android:orderInCategory="2"/>
 </menu>

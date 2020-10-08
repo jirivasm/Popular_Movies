@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,7 +35,6 @@ public class MovieNetworkUtils {
         if (JsonResponse.isEmpty())
             return null;
 
-        //TODO: Make JSON parsing here to extract the list of movies.
         ArrayList<Movie> movieList = new ArrayList<>();
 
         try {
@@ -47,7 +47,7 @@ public class MovieNetworkUtils {
                 String movieResource = BASE_IMAGE_URL + movie.getString("poster_path");
 
 
-                String movieID = movie.getString("id");
+                int movieID = movie.getInt("id");
 
 
                 movieList.add(new Movie(movieResource, movieID));
@@ -61,33 +61,58 @@ public class MovieNetworkUtils {
 
         return movieList;
     }
-
-    public static Movie extractMovieDetailJson(String JsonResponse) {
+    public static Movie extractMovieDetailJson(String[] JsonResponse) {
         String movieResource = "";
         String movieName = "";
         String movieReleaseDate = "";
         double movieRating = 0;
         String movieDescription = "";
-        String movieID = "";
+        int movieID = 0;
+        List<Reviews> ReviewsList = new ArrayList<>();
+        List<String> TrailersList = new ArrayList<>();
 
-        if (JsonResponse.isEmpty())
+        if (JsonResponse[0].isEmpty() && JsonResponse[1].isEmpty() && JsonResponse[2].isEmpty())
             return null;
         try {
-            JSONObject object = new JSONObject(JsonResponse);
+            JSONObject details = new JSONObject(JsonResponse[0]);
 
-            movieResource = BASE_IMAGE_URL + object.getString("poster_path");
-            movieName = object.getString("original_title");
-            movieReleaseDate = object.getString("release_date");
-            movieRating = object.getDouble("vote_average");
-            movieDescription = object.getString("overview");
-            movieID = object.getString("id");
+            movieResource = BASE_IMAGE_URL + details.getString("poster_path");
+            movieName = details.getString("original_title");
+            movieReleaseDate = details.getString("release_date");
+            movieRating = details.getDouble("vote_average");
+            movieDescription = details.getString("overview");
+            movieID = details.getInt("id");
 
+            //getting the reviews
+            JSONObject reviews = new JSONObject(JsonResponse[1]);
+
+            JSONArray resultsArray = reviews.getJSONArray("results");
+            for (int i = 0; i < resultsArray.length(); i++) {
+
+                JSONObject movie = resultsArray.getJSONObject(i);
+                String reviewAuthor = movie.getString("author");
+                String reviewContent = movie.getString("content");
+
+                ReviewsList.add(new Reviews(reviewAuthor, reviewContent));
+            }
+            //Getting The Trailers
+            JSONObject trailers = new JSONObject(JsonResponse[2]);
+
+            JSONArray youtuberesultsArray = trailers.getJSONArray("youtube");
+            for (int i = 0; i < youtuberesultsArray.length(); i++) {
+
+                JSONObject movie = youtuberesultsArray.getJSONObject(i);
+                String youtubeKey = movie.getString("source");
+
+                TrailersList.add(youtubeKey);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return new Movie(movieResource, movieName, movieReleaseDate, movieDescription, movieRating, movieID);
+        return new Movie(movieResource, movieName, movieReleaseDate, movieDescription, movieRating, movieID, false, ReviewsList,TrailersList);
     }
+
 
     private static URL createUrl(String stringUrl) {
         URL url = null;
@@ -115,20 +140,26 @@ public class MovieNetworkUtils {
         // Extract relevant fields from the JSON response and create a List of movies object
 
 
-
         // Return the List of Movies
         return extractMoviesJson(jsonResponse);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public static Movie fetchMovieDetails(String requestUrl) {
+    public static Movie fetchMovieDetails(String requestUrlDetails, String requestUrlReviews, String requestUrlTrailers) {
         // Create URL object
-        URL url = createUrl(requestUrl);
+        URL urlDetails = createUrl(requestUrlDetails);
+        URL urlReviews = createUrl(requestUrlReviews);
+        URL urlTrailers = createUrl(requestUrlTrailers);
 
         // Perform HTTP request to the URL and receive a JSON response back
-        String jsonResponse = null;
+
+        String[] jsonResponse = {requestUrlDetails, requestUrlReviews,requestUrlTrailers};
+
         try {
-            jsonResponse = makeHttpRequest(url);
+            jsonResponse[0] = makeHttpRequest(urlDetails);
+            jsonResponse[1] = makeHttpRequest(urlReviews);
+            jsonResponse[2] = makeHttpRequest(urlTrailers);
+
         } catch (IOException e) {
             Log.e(MovieNetworkUtils.class.getSimpleName(), "Error closing input stream", e);
         }

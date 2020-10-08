@@ -4,4 +4,9 @@
     <string name="rating">Rating</string>
     <string name="popularity">Popularity</string>
     <string name="something_went_wrong">there was an error loading</string>
+    <string name="favorites">Favorites</string>
+    <string name="isChecked">isChecked</string>
+    <string name="reviews">Reviews</string>
+    <string name="trailers">Trailers</string>
+    <string name="no_reviews_available">No reviews available at this time</string>
 </resources>
